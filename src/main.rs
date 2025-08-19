@@ -8,7 +8,7 @@ mod api;
 #[tokio::main]
 async fn main() {
     let cors = CorsLayer::new()
-        .allow_origin(HeaderValue::from_static("http://localhost:5173"))
+        .allow_origin(HeaderValue::from_static("https://code.oneprog.org"))
         .allow_methods(Any)
         .allow_headers(Any);
 
