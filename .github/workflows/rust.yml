@@ -16,6 +16,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Create .env
+      run: |
+        echo "ALLOWED_URL=${ENV_ALLOWED_URL}" >> .env
+        echo "HOST_URL=${ENV_HOST_URL}" >> .env
     - name: Build
       run: cargo build --verbose
     - name: Run tests
