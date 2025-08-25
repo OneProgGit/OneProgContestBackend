@@ -1,0 +1,46 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
+    - name: Run Clippy
+      run: cargo clippy --verbose
+    - name: Run Rustfmt
+      run: cargo fmt --check --verbose
+    - name: Add server to known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+    - name: Copy binary
+      uses: burnett01/rsync-deployments@7.0.2
+      with:
+        switches: -avzr --delete --exclude="" --include="" --filter=""
+        path: target/release/contest-back
+        remote_path: ${{ secrets.SERVER_FOLDER }}
+        remote_host: ${{ secrets.SERVER_HOST }}
+        remote_user: ${{ secrets.SERVER_USER }}
+        remote_key: ${{ secrets.SERVER_SSH }}
+    - name: Reload systemd service
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH }}
+        script: systemctl restart ${{ secrets.SERVER_SERVICE }}.service
