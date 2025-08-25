@@ -1,35 +1,38 @@
-name: Rust
+name: Main
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - main
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+        
     - name: Create .env
       run: |
         echo "ALLOWED_URL=${ENV_ALLOWED_URL}" >> .env
         echo "HOST_URL=${ENV_HOST_URL}" >> .env
+        
     - name: Build
       run: cargo build --release --verbose
+      
     - name: Run tests
       run: cargo test --verbose
+      
     - name: Run Clippy
       run: cargo clippy --verbose
+      
     - name: Run Rustfmt
       run: cargo fmt --check --verbose
-    - name: Add server to known hosts
-      run: |
-        mkdir -p ~/.ssh
-        ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+      
     - name: Copy binary
       uses: burnett01/rsync-deployments@7.0.2
       with:
@@ -39,6 +42,7 @@ jobs:
         remote_host: ${{ secrets.SERVER_HOST }}
         remote_user: ${{ secrets.SERVER_USER }}
         remote_key: ${{ secrets.SERVER_SSH }}
+        
     - name: Reload systemd service
       uses: appleboy/ssh-action@v1
       with:
