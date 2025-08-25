@@ -12,6 +12,7 @@ use std::env;
 
 use axum::{Router, http::HeaderValue, routing::get};
 use dotenvy::dotenv;
+use tokio::signal;
 use tower_http::cors::{Any, CorsLayer};
 
 use crate::api::posts::get_posts;
@@ -37,5 +38,14 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind(host_url)
         .await
         .expect("Failed to create tcp listener");
-    axum::serve(listener, app).await.expect("Failed to serve");
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await
+        .expect("Failed to serve");
+}
+
+async fn shutdown_signal() {
+    signal::ctrl_c()
+        .await
+        .expect("Failed to install Ctrl+C handler");
 }
