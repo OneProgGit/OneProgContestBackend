@@ -16,11 +16,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
         
-    - name: Create .env
-      run: |
-        echo "ALLOWED_URL=${{ secrets.ENV_ALLOWED_URL }}" >> .env
-        echo "HOST_URL=${{ secrets.ENV_HOST_URL }}" >> .env
-        
     - name: Build
       run: cargo build --release --verbose
       
