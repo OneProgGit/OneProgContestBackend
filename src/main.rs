@@ -33,7 +33,7 @@ async fn main() {
         .allow_methods(Any)
         .allow_headers(Any);
 
-    let router = Router::new().route("/users", get(get_posts)).layer(cors);
+    let router = Router::new().route("/posts", get(get_posts)).layer(cors);
     let app = Router::new().nest("/contest", router);
 
     let listener = tokio::net::TcpListener::bind(host_url)
