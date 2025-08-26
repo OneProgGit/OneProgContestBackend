@@ -17,7 +17,9 @@ use tower_http::cors::{Any, CorsLayer};
 
 use crate::api::posts::get_posts;
 
-mod api;
+pub mod api;
+pub mod db;
+pub mod models;
 
 #[tokio::main]
 async fn main() {
