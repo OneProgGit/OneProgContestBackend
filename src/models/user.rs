@@ -1,4 +1,6 @@
 //! [`User`]
+//! [`RequestUserData`]
+//! [`NewDbUser`]
 
 use serde::Deserialize;
 use sqlx::prelude::FromRow;
@@ -10,6 +12,7 @@ use uuid::Uuid;
 /// let user = User { id: 52, username: "OneProg", password_hash: "******" };
 /// println!("{}", user.username);
 /// ```
+
 #[derive(Deserialize, Debug, FromRow)]
 pub struct User {
     /// Unique user id
@@ -17,5 +20,41 @@ pub struct User {
     /// Unique username
     pub username: String,
     /// User's hashed password (not raw!)
+    pub hashed_password: String,
+}
+
+/// Defines a user used for frontend requests
+/// # Example
+/// ```
+/// const res = await fetch(apiUrl + "/user", {
+///     method: "POST",
+///     headers: {
+///         "Content-Type": "application/json"
+///     },
+///     body: JSON.stringify({
+///         username: "OneProg",
+///         password: "123456"    
+///     })
+/// })
+/// ```
+
+#[derive(Deserialize)]
+pub struct RequestUserData {
+    /// User's name
+    pub username: String,
+    /// User's password
+    pub password: String,
+}
+
+/// Defines a new user to create in database
+/// # Example
+/// ```
+/// let new_user = NewUser { username: "OneProg", hashed_password: "******" };
+/// db.create_user(new_user).await?;
+/// ```
+pub struct NewDbUser {
+    /// User's name
+    pub username: String,
+    /// User's password which has already hashed
     pub hashed_password: String,
 }

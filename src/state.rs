@@ -13,5 +13,6 @@ use crate::db::Database;
 /// ```
 #[derive(Clone)]
 pub struct AppState<Db: Database> {
+    /// Database reference
     pub db: Arc<Db>,
 }

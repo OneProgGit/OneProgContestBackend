@@ -12,7 +12,9 @@ use argon2::{
 };
 
 /// Hashes password using argon2
-pub fn hash_password(password: String) -> anyhow::Result<String> {
+/// # Errors
+/// Returns an error when argon2 operations failed
+pub fn hash_password(password: &str) -> anyhow::Result<String> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
 
@@ -24,8 +26,10 @@ pub fn hash_password(password: String) -> anyhow::Result<String> {
 }
 
 /// Verifies password using argon2
-pub fn verify_password(excepted: String, password: String) -> anyhow::Result<bool> {
-    let hash = &PasswordHash::new(&excepted).map_err(|e| anyhow::anyhow!(e))?;
+/// # Errors
+/// Returns an error when argon2 operations failed
+pub fn verify_password(excepted: &str, password: &str) -> anyhow::Result<bool> {
+    let hash = &PasswordHash::new(excepted).map_err(|e| anyhow::anyhow!(e))?;
     let argon2 = Argon2::default();
     Ok(argon2.verify_password(password.as_bytes(), hash).is_ok())
 }

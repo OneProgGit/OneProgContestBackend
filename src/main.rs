@@ -8,13 +8,17 @@
 #![deny(missing_docs)]
 #![allow(clippy::multiple_crate_versions)]
 
-use axum::{Router, http::HeaderValue, routing::get};
+use axum::{
+    Router,
+    http::HeaderValue,
+    routing::{get, post},
+};
 use dotenvy::dotenv;
 use tokio::{net::TcpListener, signal};
 use tower_http::cors::{Any, CorsLayer};
 
 use crate::{
-    api::posts::get_posts,
+    api::{posts::get_posts, register::register},
     db::{Database, postgres::PostgresDatabase},
     state::AppState,
 };
@@ -22,8 +26,12 @@ use crate::{
 pub mod api;
 pub mod crypt;
 pub mod db;
+pub mod jwt;
 pub mod models;
 pub mod state;
+
+/// Type defines concrete `AppState` type. Example of its value: `AppState<PostgresDatabase>`
+pub type AppStateType = AppState<PostgresDatabase>;
 
 #[tokio::main]
 async fn main() {
@@ -50,9 +58,10 @@ async fn main() {
         .await
         .expect("Failed to connect to database");
 
-    let state = AppState { db };
+    let state = AppStateType { db };
     let router = Router::new()
         .route("/posts", get(get_posts))
+        .route("/users", post(register))
         .layer(cors)
         .with_state(state);
     let app = Router::new().nest("/contest", router);

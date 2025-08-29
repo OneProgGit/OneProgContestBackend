@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use uuid::Uuid;
 
-use crate::models::{new_user::NewDbUser, post::Post, user::User};
+use crate::models::{post::Post, user::NewDbUser, user::User};
 
 pub mod postgres;
 

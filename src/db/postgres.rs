@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 use crate::{
     db::Database,
-    models::{new_user::NewDbUser, post::Post, user::User},
+    models::{post::Post, user::NewDbUser, user::User},
 };
 
 /// Postgresql database using Sqlx
