@@ -23,7 +23,7 @@ pub fn create_jwt(claims: &JwtClaims, secret: &str) -> anyhow::Result<String> {
     Ok(token)
 }
 
-/// Validates JWT token.
+/// Validates and decodes JWT token.
 /// # Example
 /// ```
 /// let token = "1234";
@@ -32,7 +32,7 @@ pub fn create_jwt(claims: &JwtClaims, secret: &str) -> anyhow::Result<String> {
 /// ```
 /// # Errors
 /// Returns an error when token is invalid or expired
-pub fn validate_jwt(token: &str, secret: &str) -> anyhow::Result<JwtClaims> {
+pub fn decode_jwt(token: &str, secret: &str) -> anyhow::Result<JwtClaims> {
     let claims = decode::<JwtClaims>(
         token,
         &DecodingKey::from_secret(secret.as_bytes()),

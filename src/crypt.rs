@@ -27,9 +27,10 @@ pub fn hash_password(password: &str) -> anyhow::Result<String> {
 
 /// Verifies password using argon2
 /// # Errors
-/// Returns an error when argon2 operations failed
-pub fn verify_password(excepted: &str, password: &str) -> anyhow::Result<bool> {
-    let hash = &PasswordHash::new(excepted).map_err(|e| anyhow::anyhow!(e))?;
+/// Returns an error when failed to create `PasswordHash` instance
+pub fn verify_password(expected: &str, password: &str) -> anyhow::Result<bool> {
+    let hash = PasswordHash::new(expected).map_err(|e| anyhow::anyhow!(e))?;
     let argon2 = Argon2::default();
-    Ok(argon2.verify_password(password.as_bytes(), hash).is_ok())
+
+    Ok(argon2.verify_password(password.as_bytes(), &hash).is_ok())
 }

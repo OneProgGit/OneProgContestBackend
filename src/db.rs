@@ -22,7 +22,7 @@ pub trait Database: Send + Sync + Clone {
     /// Creates a new user.
     /// # Example
     /// ```
-    /// let new_user = NewDbUser { username: "OneProg", hashed_password: "******" };
+    /// let new_user = NewDbUser { username: "OneProg", hashed_password: "******".into() };
     /// db.create_user(new_user).await?;
     /// ```
     async fn create_user(&self, user: NewDbUser) -> anyhow::Result<()>;
@@ -34,6 +34,15 @@ pub trait Database: Send + Sync + Clone {
     /// println!("Your username: {}", user.username);
     /// ```
     async fn get_user_by_id(&self, id: Uuid) -> anyhow::Result<User>;
+
+    /// Gets user by given username;
+    /// # Example
+    /// ```
+    /// let user = NewDbUser { username: "OneProg", hashed_password: "******".into() };
+    /// db.create_user(user).await?;
+    /// assert_eq!("******".into(), db.get_user_by_username(user.username).unwrap().hashed_password);
+    /// ```
+    async fn get_user_by_username(&self, username: &str) -> anyhow::Result<User>;
 
     /// Gets all posts, which showed in main page.
     /// # Example

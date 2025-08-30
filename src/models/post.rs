@@ -4,6 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
+use uuid::Uuid;
 
 /// Defines post data. Used for both getting and creating posts.
 /// # Example
@@ -13,7 +14,7 @@ use sqlx::prelude::FromRow;
 #[derive(Serialize, Deserialize, Debug, FromRow)]
 pub struct Post {
     /// Unique post id
-    pub id: i32,
+    pub id: Uuid,
     /// Username of post author
     pub author: String,
     /// Post title

@@ -9,7 +9,7 @@ use crate::{
     AppStateType,
     crypt::hash_password,
     db::Database,
-    models::user::{NewDbUser, RequestUserData},
+    models::user::{LogInData, NewDbUser},
 };
 
 /// Used when /users post request called. Registers a new user
@@ -17,18 +17,19 @@ use crate::{
 /// Returns an error when failed to hash password or create user in database
 pub async fn register(
     State(state): State<AppStateType>,
-    Json(user): Json<RequestUserData>,
+    Json(user): Json<LogInData>,
 ) -> StatusCode {
     if let Ok(hashed_password) = hash_password(&user.password) {
         let new_user = NewDbUser {
             username: user.username,
             hashed_password,
         };
+
         state
             .db
             .create_user(new_user)
             .await
-            .map_or(StatusCode::INTERNAL_SERVER_ERROR, |()| StatusCode::OK)
+            .map_or(StatusCode::BAD_REQUEST, |()| StatusCode::OK)
     } else {
         StatusCode::INTERNAL_SERVER_ERROR
     }

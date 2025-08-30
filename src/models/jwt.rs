@@ -10,5 +10,5 @@ pub struct JwtClaims {
     /// User's id
     pub id: Uuid,
     /// Token expire time
-    pub exp: usize,
+    pub exp: i64,
 }
