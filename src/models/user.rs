@@ -21,6 +21,8 @@ pub struct User {
     pub username: String,
     /// User's hashed password (not raw!)
     pub hashed_password: String,
+    /// Is user an admin?
+    pub admin: bool,
 }
 
 /// Defines a user used for frontend requests

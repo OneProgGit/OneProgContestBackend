@@ -6,7 +6,10 @@ use std::sync::Arc;
 
 use uuid::Uuid;
 
-use crate::models::{post::Post, user::NewDbUser, user::User};
+use crate::models::{
+    post::{NewDbPost, Post},
+    user::{NewDbUser, User},
+};
 
 pub mod postgres;
 
@@ -43,6 +46,14 @@ pub trait Database: Send + Sync + Clone {
     /// assert_eq!("******".into(), db.get_user_by_username(user.username).unwrap().hashed_password);
     /// ```
     async fn get_user_by_username(&self, username: &str) -> anyhow::Result<User>;
+
+    /// Creates a new post, which showed in main page.
+    /// # Example
+    /// ```
+    /// let post = NewDbPost { author: "OneProg", title: "Lorem ipsum", content: "Lorem ipsum" };
+    /// db.create_post(post).await?;
+    /// ```
+    async fn create_post(&self, post: NewDbPost) -> anyhow::Result<()>;
 
     /// Gets all posts, which showed in main page.
     /// # Example

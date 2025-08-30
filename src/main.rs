@@ -18,7 +18,11 @@ use tokio::{net::TcpListener, signal};
 use tower_http::cors::{Any, CorsLayer};
 
 use crate::{
-    api::{login::login, posts::get_posts, register::register},
+    api::{
+        login::login,
+        posts::{create_post, get_posts},
+        register::register,
+    },
     db::{Database, postgres::PostgresDatabase},
     state::AppState,
 };
@@ -63,6 +67,7 @@ async fn main() {
         .route("/posts", get(get_posts))
         .route("/users", post(register))
         .route("/login", post(login))
+        .route("/posts", post(create_post))
         .layer(cors)
         .with_state(state);
     let app = Router::new().nest("/contest", router);

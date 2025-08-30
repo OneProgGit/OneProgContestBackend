@@ -7,7 +7,10 @@ use uuid::Uuid;
 
 use crate::{
     db::Database,
-    models::{post::Post, user::NewDbUser, user::User},
+    models::{
+        post::{NewDbPost, Post},
+        user::{NewDbUser, User},
+    },
 };
 
 /// Postgresql database using Sqlx
@@ -50,6 +53,21 @@ impl Database for PostgresDatabase {
             .fetch_one(&self.pool)
             .await?;
         Ok(user)
+    }
+
+    async fn create_post(&self, post: NewDbPost) -> anyhow::Result<()> {
+        sqlx::query(
+            "
+            INSERT INTO posts (author, title, content)
+            VALUES ($1, $2, $3)
+            ",
+        )
+        .bind(post.author)
+        .bind(post.title)
+        .bind(post.content)
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn get_posts(&self) -> anyhow::Result<Vec<Post>> {
