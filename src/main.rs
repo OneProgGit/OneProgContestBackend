@@ -19,6 +19,7 @@ use tower_http::cors::{Any, CorsLayer};
 
 use crate::{
     api::{
+        get_user::get_user_data,
         login::login,
         posts::{create_post, get_posts},
         register::register,
@@ -31,6 +32,7 @@ pub mod api;
 pub mod crypt;
 pub mod db;
 pub mod jwt;
+pub mod middleware;
 pub mod models;
 pub mod state;
 
@@ -68,6 +70,7 @@ async fn main() {
         .route("/users", post(register))
         .route("/login", post(login))
         .route("/posts", post(create_post))
+        .route("/user", get(get_user_data))
         .layer(cors)
         .with_state(state);
     let app = Router::new().nest("/contest", router);

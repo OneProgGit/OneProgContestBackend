@@ -24,7 +24,7 @@ pub async fn register(
     let hashed_password = hash_password(&user.password).map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "error": "Failed to hash password" })),
+            Json(json!({ "error": "Не удалось получить хэш пароля" })),
         )
     })?;
 
@@ -33,15 +33,20 @@ pub async fn register(
         hashed_password,
     };
 
-    state.db.create_user(new_user).await.map_err(|_| {
+    state.db.create_user(new_user).await.map_err(|e| {
+        let text = e.to_string();
         (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "error": "Failed to create user" })),
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": if text.contains("повторяющееся") {
+                "Пользователь с таким именем уже зарегистрирован"
+            } else {
+                "Ошибка создания пользователя"
+            }})),
         )
     })?;
 
     Ok((
         StatusCode::OK,
-        Json(json!({ "message": "User registered successfully. Now you can log in" })),
+        Json(json!({ "message": "Пользователь зарегистрирован успешно" })),
     ))
 }

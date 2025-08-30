@@ -1,3 +1,6 @@
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+
 //! Defines method for logging into account.
 
 use axum::{
@@ -30,7 +33,7 @@ pub async fn login(
         .map_err(|_| {
             (
                 StatusCode::BAD_REQUEST,
-                Json(json!({ "error": "No user found" })),
+                Json(json!({ "error": "Пользователя с таким именем не существует" })),
             )
         })?;
 
@@ -38,35 +41,38 @@ pub async fn login(
         .map_err(|_| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({ "error": "Server error" })),
+                Json(json!({ "error": "Не удалось проверить пароль" })),
             )
         })?;
 
     if !is_valid_password {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(json!({ "error": "Invalid password" })),
+            Json(json!({ "error": "Неверный пароль" })),
         ));
     }
 
     let claims = JwtClaims {
         id: expected_user.id,
-        exp: (Utc::now() + Duration::hours(24)).timestamp(),
+        exp: (Utc::now() + Duration::hours(24)).timestamp() as usize,
     };
 
     let secret = dotenvy::var("JWT_SECRET").map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "error": "Server error" })),
+            Json(json!({ "error": "Не удалось создать JWT токен" })),
         )
     })?;
 
     let token = create_jwt(&claims, &secret).map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "error": "Failed to create JWT" })),
+            Json(json!({ "error": "Не удалось создать JWT токен" })),
         )
     })?;
 
-    Ok((StatusCode::OK, Json(json!({ "token": token }))))
+    Ok((
+        StatusCode::OK,
+        Json(json!({ "message": "Успешный вход в аккаунт", "token": token })),
+    ))
 }

@@ -2,7 +2,7 @@
 //! [`RequestUserData`]
 //! [`NewDbUser`]
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
@@ -13,7 +13,7 @@ use uuid::Uuid;
 /// println!("{}", user.username);
 /// ```
 
-#[derive(Deserialize, Debug, FromRow)]
+#[derive(Serialize, Deserialize, Debug, FromRow)]
 pub struct User {
     /// Unique user id
     pub id: Uuid,
@@ -40,7 +40,7 @@ pub struct User {
 /// })
 /// ```
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct LogInData {
     /// User's name
     pub username: String,

@@ -4,6 +4,7 @@
 //! let app = Router::new(). /* ... */ .route("/foo", post(foo));
 //! ```
 
+pub mod get_user;
 pub mod login;
 pub mod posts;
 pub mod register;

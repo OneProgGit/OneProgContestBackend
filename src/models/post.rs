@@ -25,8 +25,6 @@ pub struct Post {
 /// Defines a new post data. Used for frontend requests.
 #[derive(Serialize, Deserialize)]
 pub struct PostData {
-    /// Author's JWT token
-    pub token: String,
     /// Post title
     pub title: String,
     /// Post content

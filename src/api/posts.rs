@@ -10,7 +10,7 @@ use serde_json::{Value, json};
 use crate::{
     AppStateType,
     db::Database,
-    jwt::decode_jwt,
+    middleware::auth::Auth,
     models::post::{NewDbPost, PostData},
 };
 
@@ -19,30 +19,15 @@ use crate::{
 /// Returns an error if failed to validate JWT,
 pub async fn create_post(
     State(state): State<AppStateType>,
+    Auth(user): Auth,
     Json(post): Json<PostData>,
 ) -> impl IntoResponse {
-    let secret = dotenvy::var("JWT_SECRET").map_err(|_| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "error": "Server error" })),
-        )
-    })?;
-    let claims = decode_jwt(&post.token, &secret).map_err(|_| {
-        (
-            StatusCode::UNAUTHORIZED,
-            Json(json!({ "error": "Invalid token" })),
-        )
-    })?;
-    let user = state.db.get_user_by_id(claims.id).await.map_err(|_| {
-        (
-            StatusCode::UNAUTHORIZED,
-            Json(json!({ "error": "Invalid token" })),
-        )
-    })?;
     if !user.admin {
         return Err((
             StatusCode::FORBIDDEN,
-            Json(json!({ "error": "You are not admin" })),
+            Json(
+                json!({ "error": "Для создания поста необходимы привилегии администратора, коих у Вас нет" }),
+            ),
         ));
     }
     let db_new_post = NewDbPost {
@@ -53,12 +38,12 @@ pub async fn create_post(
     state.db.create_post(db_new_post).await.map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "error": "Server error" })),
+            Json(json!({ "error": "Не удалось создать пост" })),
         )
     })?;
     Ok((
         StatusCode::OK,
-        Json(json!({ "message": "Post created successfully" })),
+        Json(json!({ "message": "Пост создан успешно" })),
     ))
 }
 
