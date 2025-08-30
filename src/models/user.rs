@@ -28,7 +28,7 @@ pub struct User {
 /// Defines a user used for frontend requests
 /// # Example
 /// ```
-/// const res = await fetch(apiUrl + "/user", {
+/// const res = await fetch(apiUrl + "/users", {
 ///     method: "POST",
 ///     headers: {
 ///         "Content-Type": "application/json"
